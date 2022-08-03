@@ -37,7 +37,7 @@ app.put("/patients/:pid",(req,res)=>{
     patient.age = age?age:patient.age;
     patient.primaryDoc = primaryDoc?primaryDoc:patient.primaryDoc;
     patient.address = address?address:patient.address;
-    patient.active = active?active:patient.active;
+    patient.active = active !== ''?Boolean(active):patient.active;
     console.log(patient);
     patients[pid-1] = patient;
     res.status(200).json({success: true, patient});
@@ -49,9 +49,17 @@ app.delete("/patients/:pid",(req,res)=>{
 });
 app.get("/patient",(req,res)=>{
     console.log(req.query);
-    const {name} = req.query;
+    let {search,value} = req.query;
+    console.log(search,value);
+    if(search === "age"){
+        value = Number(value);
+    }
+    if(search === "active"){
+        value = Boolean(value);
+    }
+
     let searchPatient = [];
-    searchPatient = patients.filter(p => p.name === name);
+    searchPatient = patients.filter(p => p[search] === value);
     res.status(200).json({searchPatient});
 });
 app.get("/getpatients",(req,res)=>{
